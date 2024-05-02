@@ -88,6 +88,12 @@ ejbca:
   #       name: ejbca-smtp-secrets
   #       key: smtp_password
 
+  # Extra environment variables from ConfigMap or Secret resources
+  envFrom: []
+  #  - configMapRef:
+  #      name: env-configmap
+  #  - secretRef:
+  #      name: env-secrets
   # Extra init containers to be added to the deployment
   initContainers: []
   # Extra sidecar containers to be added to the deployment
@@ -211,6 +217,11 @@ ingress:
 
 replicaCount: 1
 
+# https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+updateStrategy: {}
+#  type: RollingUpdate
+#  rollingUpdate: {}
+
 image:
   repository: keyfactor/ejbca-ce
   pullPolicy: IfNotPresent
@@ -230,6 +241,7 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+podLabels: {}
 podAnnotations: {}
 
 podSecurityContext: {}

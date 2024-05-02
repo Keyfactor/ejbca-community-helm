@@ -12,6 +12,10 @@ spec:
   #{{- if eq .Values.services.proxyHttp.type "LoadBalancer" }}
   #serviceName: {{ include "ejbca.fullname" . }}
   #{{- end }}
+  {{- if .Values.updateStrategy }}
+  strategy:
+    {{- toYaml .Values.updateStrategy | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "ejbca.selectorLabels" . | nindent 6 }}
@@ -23,6 +27,9 @@ spec:
       {{- end }}
       labels:
         {{- include "ejbca.selectorLabels" . | nindent 8 }}
+      {{- with .Values.podLabels }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
