@@ -264,6 +264,12 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+# https://kubernetes.io/docs/tasks/run-application/configure-pdb/
+podDisruptionBudget:
+  create: false
+  minAvailable: 1
+  maxUnavailable: ""
+
 nodeSelector: {}
 
 tolerations: []
