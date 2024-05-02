@@ -47,6 +47,10 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env: {{- include "ejbca.ejbcaDeploymentParameters" . | nindent 12 }}
+          {{- with .Values.ejbca.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           command: 
             - "/bin/sh"
             - "-c"
@@ -111,6 +115,10 @@ spec:
             - name: PROXY_HTTP_BIND
               value: {{ .Values.services.proxyHttp.bindIP }}
             {{- end }}
+          {{- with .Values.ejbca.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           lifecycle:
             postStart:
               exec:
