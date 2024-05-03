@@ -288,8 +288,21 @@ podDisruptionBudget:
   minAvailable: 1
   maxUnavailable: ""
 
+# https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/
 nodeSelector: {}
+affinity: {}
 
+# https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/
 tolerations: []
 
-affinity: {}
+# https://kubernetes.io/docs/concepts/scheduling-eviction/topology-spread-constraints/
+topologySpreadConstraints: []
+
+# https://kubernetes.io/docs/concepts/scheduling-eviction/pod-priority-preemption/
+priorityClassName: ""
+
+# https://kubernetes.io/docs/concepts/scheduling-eviction/kube-scheduler/
+schedulerName: ""
+
+# https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/
+terminationGracePeriodSeconds: ""
