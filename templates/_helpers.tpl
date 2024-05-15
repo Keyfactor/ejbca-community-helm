@@ -24,7 +24,7 @@ Define the EJBCA deployment parameters
 Define port that EJBCA redirects for HTTPS
 */}}
 {{- define "ejbca-community-helm.ejbcaHttpsPort" -}}
-{{- if .Values.nginx.enabled }}
+{{- if .Values.nginx.service.enabled }}
 {{- .Values.nginx.service.httpsPort }}
 {{- else if .Values.services.directHttp.enabled }}
 {{- .Values.services.directHttp.httpsPort }}
@@ -37,7 +37,7 @@ Define port that EJBCA redirects for HTTPS
 Define port that EJBCA redirects for HTTP
 */}}
 {{- define "ejbca-community-helm.ejbcaPubhttpPort" -}}
-{{- if .Values.nginx.enabled }}
+{{- if .Values.nginx.service.enabled }}
 {{- .Values.nginx.service.httpPort }}
 {{- else if .Values.services.directHttp.enabled }}
 {{- .Values.services.directHttp.httpPort }}
