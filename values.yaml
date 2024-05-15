@@ -3,15 +3,20 @@
 # Declare variables to be passed into your templates.
 
 ejbca:
+  ## only applicable for quick setup of ephemeral test environments
   useEphemeralH2Database: true
   useH2Persistence: false
   #existingH2PersistenceClaim: "database-data-claim"
+
   importExternalCas: false
   #externalCasSecret: managementca-secret
+  
+  ## not recommended: applicable only when direct HTTP access to EJBCA is enabled
   importAppserverKeystore: false
   #appserverKeystoreSecret: keystore-secret
   importAppserverTruststore: false
   #appserverTruststoreSecret: truststore-secret
+  
   importEjbcaConfFiles: false
   #ejbcaConfFilesSecret: ejbca-conf
   #importConfigdumpStaged: false
@@ -20,13 +25,69 @@ ejbca:
   #configdumpInitializeSecret: configdump-initialize-secret
   #superadminPasswordOverride: "foo123"
   env:
+    # for ephemeral test environments and only applicable to CA node
     TLS_SETUP_ENABLED: "simple"
+    # External RA, VA, or when you want to bootstrap a CA/superadmin credential to use
+    # TLS_SETUP_ENABLED: "later"
+
+    # database username and password are recommended to be input as secret
+    # DATABASE_JDBC_URL: ""
+
+    # Audit logging should only be enabled in CA node
+    LOG_AUDIT_TO_DB: false
+    # INFO, DEBUG, TRACE, ERROR
+    LOG_LEVEL_APP: "INFO"
+    LOG_LEVEL_SERVER: "INFO"
+
+    ## Observability
+    # The IP address where port 8090 will listen for requests to /health, /health/ready,
+    # /health/live and /metrics . Set this to 0.0.0.0 to bind to all container interfaces.
+    OBSERVABLE_BIND: "127.0.0.1"
+    # Set this to "true" to collect metrics and expose them at the /metrics endpoint for scraping.
+    METRICS_ENABLED: false
+    
+    ## Global OCSP configurations
+    OCSP_CHECK_SIGN_CERT_VALIDITY: true
+    OCSP_NON_EXISTING_IS_GOOD: false
+
+    ## SMTP configuration
+    # Specify the FQDN or IP Address of the SMTP host for EJBCA to send email notifications.
+    SMTP_DESTINATION: "localhost"
+    SMTP_DESTINATION_PORT: "25"
+    SMTP_FROM: no-reply@localhost
+    SMTP_TLS_ENABLED: true
+    # Used for Wildfly to connect using TLS to the SMTP server. This only supports public CA certificates.
+    SMTP_SSL_ENABLED: true
+    # The username used when authentication is required for SMTP server.
+    SMTP_USERNAME: ejbca-mail
+
   #envRaw:
+  #  - name: DATABASE_USER
+  #    valueFrom:
+  #     secretKeyRef:
+  #       name: ejbcadbcredentials
+  #       key: database_user
   #  - name: DATABASE_PASSWORD
   #    valueFrom:
   #     secretKeyRef:
   #       name: ejbcadbcredentials
   #       key: database_password
+  #  - name: PASSWORD_ENCRYPTION_KEY
+  #    valueFrom:
+  #     secretKeyRef:
+  #       name: ejbca-confidentiality-secrets
+  #       key: password_encrpytion_key
+  #  - name: EJBCA_CLI_DEFAULTPASSWORD
+  #    valueFrom:
+  #     secretKeyRef:
+  #       name: ejbca-confidentiality-secrets
+  #       key: cli_default_password
+  #  - name: SMTP_PASSWORD
+  #    valueFrom:
+  #     secretKeyRef:
+  #       name: ejbca-smtp-secrets
+  #       key: smtp_password
+
   # Extra init containers to be added to the deployment
   initContainers: []
   # Extra sidecar containers to be added to the deployment
@@ -38,6 +99,7 @@ ejbca:
 
 # Only one of the following services can be enabled at a time
 services:
+  # not recommended, should only be used for debugging purpose
   directHttp:
     enabled: true
     type: NodePort
@@ -48,6 +110,7 @@ services:
     type: ClusterIP
     bindIP: 0.0.0.0
     port: 8009
+    # recommended, use with nginx or ingress for access
   proxyHttp:
     enabled: false
     type: ClusterIP
