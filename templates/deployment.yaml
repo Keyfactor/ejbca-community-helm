@@ -34,7 +34,7 @@ spec:
       {{- if or .Values.nginx.enabled .Values.ejbca.initContainers }}
       initContainers:
         {{- if .Values.nginx.enabled }}
-        - name: {{ .Chart.Name }}-init
+        - name: {{ template "ejbca.fullname" . }}-init
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -70,7 +70,7 @@ spec:
       {{- end }}
       containers:
         {{- if .Values.nginx.enabled }}
-        - name: {{ .Chart.Name }}-nginx
+        - name: {{ template "ejbca.fullname" . }}-nginx
           image: nginx:alpine
           ports:
           - name: nginx-http
@@ -90,7 +90,7 @@ spec:
             - name: nginx-cert
               mountPath: /etc/nginx/ssl/
         {{- end }}
-        - name: {{ .Chart.Name }}
+        - name: {{ template "ejbca.fullname" . }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
