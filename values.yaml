@@ -63,6 +63,7 @@ nginx:
   enabled: false
   host: ""
   service:
+    enabled: false
     type: NodePort
     httpPort: 30080
     httpsPort: 30443

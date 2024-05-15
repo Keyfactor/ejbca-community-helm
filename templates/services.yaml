@@ -45,19 +45,30 @@ spec:
 {{- if .Values.services.proxyHttp.enabled }}
 spec:
   type: {{ .Values.services.proxyHttp.type }}
+  {{- if eq .Values.services.proxyHttp.type "LoadBalancer" }}
+  sessionAffinity: ClientIP
+  {{- end }}      
   ports:
     - port: {{ .Values.services.proxyHttp.httpPort }}
       {{- if eq .Values.services.proxyHttp.type "NodePort" }}
       nodePort: {{ .Values.services.proxyHttp.httpPort }}
       {{- end }}
+      {{- if eq .Values.services.proxyHttp.type "LoadBalancer" }}
+      targetPort: nginx-http
+      {{- else }}
       targetPort: proxy-http
+      {{- end }}
       protocol: TCP
       name: proxy-http
     - port: {{ .Values.services.proxyHttp.httpsPort }}
       {{- if eq .Values.services.proxyHttp.type "NodePort" }}
       nodePort: {{ .Values.services.proxyHttp.httpsPort }}
       {{- end }}
-      targetPort: proxy-https
+      {{- if eq .Values.services.proxyHttp.type "LoadBalancer" }}
+      targetPort: nginx-https
+      {{- else }}
+      targetPort: proxy-http
+      {{- end }}
       protocol: TCP
       name: proxy-https
   selector:
