@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "ejbca-community-helm.fullname" . }}
+  name: {{ include "ejbca.fullname" . }}
   labels:
-    {{- include "ejbca-community-helm.labels" . | nindent 4 }}
+    {{- include "ejbca.labels" . | nindent 4 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
   {{- end }}
   # Adding for stateful set coming in a later PR
   #{{- if eq .Values.services.proxyHttp.type "LoadBalancer" }}
-  #serviceName: {{ include "ejbca-community-helm.fullname" . }}
+  #serviceName: {{ include "ejbca.fullname" . }}
   #{{- end }}
   selector:
     matchLabels:
-      {{- include "ejbca-community-helm.selectorLabels" . | nindent 6 }}
+      {{- include "ejbca.selectorLabels" . | nindent 6 }}
   template:
     metadata:
       {{- with .Values.podAnnotations }}
@@ -22,13 +22,13 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        {{- include "ejbca-community-helm.selectorLabels" . | nindent 8 }}
+        {{- include "ejbca.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "ejbca-community-helm.serviceAccountName" . }}
+      serviceAccountName: {{ include "ejbca.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}  
       {{- if or .Values.nginx.enabled .Values.ejbca.initContainers }}
@@ -39,7 +39,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env: {{- include "ejbca-community-helm.ejbcaDeploymentParameters" . | nindent 12 }}
+          env: {{- include "ejbca.ejbcaDeploymentParameters" . | nindent 12 }}
           command: 
             - "/bin/sh"
             - "-c"
@@ -95,7 +95,7 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env: {{- include "ejbca-community-helm.ejbcaDeploymentParameters" . | nindent 12 }}
+          env: {{- include "ejbca.ejbcaDeploymentParameters" . | nindent 12 }}
             {{- if .Values.services.proxyAJP.enabled }}
             - name: PROXY_AJP_BIND
               value: {{ .Values.services.proxyAJP.bindIP }}
@@ -112,8 +112,8 @@ spec:
                   - "-c"
                   - |
                     {{- if not .Values.ejbca.importEjbcaConfFiles }}
-                    sed -i s/https=443/https={{- include "ejbca-community-helm.ejbcaHttpsPort" . -}}/g /opt/primekey/ejbca/conf/web.properties
-                    sed -i s/pubhttp=80/pubhttp={{- include "ejbca-community-helm.ejbcaPubhttpPort" . -}}/g /opt/primekey/ejbca/conf/web.properties
+                    sed -i s/https=443/https={{- include "ejbca.ejbcaHttpsPort" . -}}/g /opt/primekey/ejbca/conf/web.properties
+                    sed -i s/pubhttp=80/pubhttp={{- include "ejbca.ejbcaPubhttpPort" . -}}/g /opt/primekey/ejbca/conf/web.properties
                     {{- end }}
                     {{- if and (hasKey .Values.ejbca "superadminPasswordOverride") (eq .Values.ejbca.env.TLS_SETUP_ENABLED "true") }}
                     until [ -f /opt/keyfactor/appserver/standalone/deployments/ejbca.ear.deployed ]; do sleep 5; done
