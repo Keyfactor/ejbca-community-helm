@@ -395,7 +395,7 @@ The following lists other variables that provide additional miscellaneous capabi
 | services.proxyAJP.bindIP      | IP to bind for proxy AJP communication                                                               | 0.0.0.0   |
 | services.proxyAJP.port        | Service port for proxy AJP communication                                                             | 8009      |
 | services.proxyHttp.enabled    | If service for reverse proxy servers to communicate with EJBCA container over HTTP should be enabled | false     |
-| services.proxyHttp.type       | Service type for proxy HTTP communication                                                            | ClusterIP |
+| services.proxyHttp.type       | Service type for proxy HTTP communication. When LoadBalancer type is used the nginx proxy must also be used with the following settings `nginx.enabled=true` and `nginx.service.enabled=false`                                                            | ClusterIP |
 | services.proxyHttp.bindIP     | IP to bind for proxy HTTP communication                                                              | 0.0.0.0   |
 | services.proxyHttp.httpPort   | Service port for proxy HTTP communication                                                            | 8081      |
 | services.proxyHttp.httpsPort  | Service port for proxy HTTP communication that accepts SSL_CLIENT_CERT header                        | 8082      |
@@ -403,14 +403,15 @@ The following lists other variables that provide additional miscellaneous capabi
 
 ### NGINX Reverse Proxy Parameters
 
-| Name                    | Description                                                            | Default  |
-| ----------------------- | ---------------------------------------------------------------------- | -------- |
-| nginx.enabled           | If NGINX sidecar container should be deploy as reverse proxy for EJBCA | false    |
-| nginx.host              | NGINX reverse proxy server name                                        |          |
-| nginx.service.type      | Type of service to create for NGINX reverse proxy                      | NodePort |
-| nginx.service.httpPort  | HTTP port to use for NGINX reverse proxy                               | 30080    |
-| nginx.service.httpsPort | HTTPS port to use for NGINX reverse proxy                              | 30443    |
-| nginx.conf              | NGINX server configuration parameters                                  |          |
+| Name                       | Description                                                            | Default  |
+| -------------------------- | ---------------------------------------------------------------------- | -------- |
+| nginx.enabled              | If NGINX sidecar container should be deploy as reverse proxy for EJBCA | false    |
+| nginx.host                 | NGINX reverse proxy server name, used for the commonName in the nginx TLS certificate |          |
+| nginx.service.enabled      | Creates a service for accessing EJBCA. This should be used when using `services.proxyHttp.type=LoadBalancer`             | false    |
+| nginx.service.type         | Type of service to create for NGINX reverse proxy                      | NodePort |
+| nginx.service.httpPort     | HTTP port to use for NGINX reverse proxy                               | 30080    |
+| nginx.service.httpsPort    | HTTPS port to use for NGINX reverse proxy                              | 30443    |
+| nginx.conf                 | NGINX server configuration parameters                                  |          |
 
 ### Ingress Parameters
 

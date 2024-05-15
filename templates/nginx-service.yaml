@@ -1,4 +1,4 @@
-{{- if .Values.nginx.enabled }}
+{{- if .Values.nginx.service.enabled }}
 kind: Service
 apiVersion: v1
 metadata:
