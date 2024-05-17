@@ -28,7 +28,7 @@ data:
         server_name {{ .Values.nginx.host }};
 
         location / {
-          proxy_pass http://localhost:8081;
+          proxy_pass http://{{ .Values.nginx.proxy_url_host }}:8081;
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "Upgrade";
           proxy_set_header Host $host;
@@ -47,7 +47,7 @@ data:
         ssl_client_certificate /etc/nginx/ssl/pem/{{ .Values.nginx.host }}-CA.pem;
 
         location / {
-          proxy_pass http://localhost:8082;
+          proxy_pass http://{{ .Values.nginx.proxy_url_host }}:8082;
           proxy_set_header SSL_CLIENT_CERT $ssl_client_cert;
           proxy_set_header Upgrade $http_upgrade;
           proxy_set_header Connection "upgrade";
