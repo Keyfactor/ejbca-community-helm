@@ -152,6 +152,7 @@ spec:
               containerPort: 8443
               protocol: TCP
             {{- end }}
+            {{- end }}
             {{- if .Values.services.proxyAJP.enabled }}
             - name: ajp
               containerPort: 8009
