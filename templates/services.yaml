@@ -8,6 +8,7 @@ metadata:
 spec:
   type: {{ .Values.services.directHttp.type }}
   ports:
+    {{- if .Values.services.directHttp.httpPort }}
     - port: {{ .Values.services.directHttp.httpPort }}
       {{- if eq .Values.services.directHttp.type "NodePort" }}
       nodePort: {{ .Values.services.directHttp.httpPort }}
@@ -15,6 +16,8 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    {{- end }}
+    {{- if .Values.services.directHttp.httpsPort }}
     - port: {{ .Values.services.directHttp.httpsPort }}
       {{- if eq .Values.services.directHttp.type "NodePort" }}
       nodePort: {{ .Values.services.directHttp.httpsPort }}
@@ -22,6 +25,7 @@ spec:
       targetPort: https
       protocol: TCP
       name: https
+    {{- end }}
     {{- if and .Values.ejbca.sidecarContainers .Values.services.sidecarPorts }}
       {{- toYaml .Values.services.sidecarPorts | nindent 4 }}
     {{- end }}
@@ -47,8 +51,9 @@ spec:
   type: {{ .Values.services.proxyHttp.type }}
   {{- if eq .Values.services.proxyHttp.type "LoadBalancer" }}
   sessionAffinity: ClientIP
-  {{- end }}      
+  {{- end }}
   ports:
+    {{- if .Values.services.proxyHttp.httpPort }}
     - port: {{ .Values.services.proxyHttp.httpPort }}
       {{- if eq .Values.services.proxyHttp.type "NodePort" }}
       nodePort: {{ .Values.services.proxyHttp.httpPort }}
@@ -60,6 +65,8 @@ spec:
       {{- end }}
       protocol: TCP
       name: proxy-http
+    {{- end }}
+    {{- if .Values.services.proxyHttp.httpsPort }}
     - port: {{ .Values.services.proxyHttp.httpsPort }}
       {{- if eq .Values.services.proxyHttp.type "NodePort" }}
       nodePort: {{ .Values.services.proxyHttp.httpsPort }}
@@ -71,6 +78,7 @@ spec:
       {{- end }}
       protocol: TCP
       name: proxy-https
+    {{- end }}
   selector:
     {{- include "ejbca.selectorLabels" . | nindent 4 }}
 {{- end }}

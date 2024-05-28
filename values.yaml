@@ -127,7 +127,7 @@ services:
   # are defined and need to expose ports
   sidecarPorts: []
 
-# Requires proxyHttp service to be enabled
+# Requires services.proxyHttp to be enabled
 nginx:
   enabled: false
   # hostname used in the commonName of the TLS certificate issued for nginx
