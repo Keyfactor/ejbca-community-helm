@@ -84,10 +84,14 @@ spec:
         - name: {{ template "ejbca.fullname" . }}-nginx
           image: nginx:alpine
           ports:
+          {{- if .Values.nginx.service.httpPort }}
           - name: nginx-http
             containerPort: 80
+          {{- end }}
+          {{- if .Values.nginx.service.httpsPort }}
           - name: nginx-https
             containerPort: 443
+          {{- end }}
           startupProbe:
             tcpSocket:
               port: 443
@@ -138,9 +142,12 @@ spec:
                     {{- end }}
           ports:
             {{- if .Values.services.directHttp.enabled }}
+            {{- if .Values.services.directHttp.httpPort }}
             - name: http
               containerPort: 8080
               protocol: TCP
+            {{- end }}
+            {{- if .Values.services.directHttp.httpsPort }}  
             - name: https
               containerPort: 8443
               protocol: TCP
@@ -151,12 +158,16 @@ spec:
               protocol: TCP
             {{- end }}
             {{- if .Values.services.proxyHttp.enabled }}
+            {{- if .Values.services.proxyHttp.httpPort }}
             - name: proxy-http
               containerPort: 8081
               protocol: TCP
+            {{- end }}
+            {{- if .Values.services.proxyHttp.httpsPort }}  
             - name: proxy-https
               containerPort: 8082
               protocol: TCP
+            {{- end }}
             {{- end }}
           startupProbe:
             tcpSocket:

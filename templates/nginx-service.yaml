@@ -6,6 +6,7 @@ metadata:
 spec:
   type: {{ .Values.nginx.service.type }}
   ports:
+    {{- if .Values.nginx.service.httpPort }}
     - name: nginx-http
       port: {{ .Values.nginx.service.httpPort }}
       {{- if eq .Values.nginx.service.type "NodePort" }}
@@ -13,6 +14,8 @@ spec:
       {{- end }}
       targetPort: nginx-http
       protocol: TCP
+    {{- end }}
+    {{- if .Values.nginx.service.httpsPort }}
     - name: nginx-https
       port: {{ .Values.nginx.service.httpsPort }}
       {{- if eq .Values.nginx.service.type "NodePort" }}
@@ -20,6 +23,7 @@ spec:
       {{- end }}
       targetPort: nginx-https
       protocol: TCP
+    {{- end }}
   selector:
     {{- include "ejbca.selectorLabels" . | nindent 4 }}
 {{- end }}

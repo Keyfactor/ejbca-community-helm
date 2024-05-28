@@ -212,6 +212,56 @@ ingress:
       secretName: ingress-tls
 ```
 
+### Only enable TLS access to EJBCA
+If you would like to only allow inbound TLS connections to EJBCA do not assert a value for the port number. The service and pod will only listen on TLS. This does not work for AJP `services.proxyAJP`.
+
+#### Direct HTTP option
+
+```yaml
+services:
+  # not recommended, should only be used for debugging purpose
+  directHttp:
+    enabled: true
+    type: NodePort
+    httpPort: 
+    httpsPort: 30443
+
+```
+
+#### Load Balancer with nginx deployed in EJBCA pod
+
+```yaml
+services:
+  proxyHttp:
+    enabled: false
+    type: LoadBalancer
+    bindIP: 0.0.0.0
+    httpPort:
+    httpsPort: 443
+
+nginx:
+  enabled: true
+  host: "enroll.ejbca.test"
+  proxy_url_host: localhost
+  service:
+    enabled: false
+    type: NodePort
+    httpPort: 
+    httpsPort: 443
+```
+
+#### Proxy HTTP
+
+```yaml
+services:
+  proxyHttp:
+    enabled: false
+    type: ClusterIP
+    bindIP: 0.0.0.0
+    httpPort:
+    httpsPort: 8082
+```
+
 ### Using init containers and sidecar containers
 
 The init containers and sidecar containers can be used to customize the deployment (for example, if you need to run security module service as additional container, or do some extra validation before EJBCA startup). The following example shows how to use sidecar containers (init containers are configured the same way):
