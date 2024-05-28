@@ -1,0 +1,13 @@
+
+Thank you for installing EJBCA CE!
+
+Now that you have deployed EJBCA, you should look over the docs on using
+EJBCA available here:
+
+https://doc.primekey.com/
+
+
+Your release is named {{ .Release.Name }}. To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }}
+  $ helm get manifest {{ .Release.Name }}
