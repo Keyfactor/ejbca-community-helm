@@ -99,7 +99,7 @@ spec:
             tcpSocket:
               port: 443
           volumeMounts:
-            - name: nginx-config
+            - name: {{ template "ejbca.fullname" . }}-nginx-config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
             - name: nginx-cert
@@ -235,9 +235,9 @@ spec:
             claimName: {{ .Values.ejbca.existingH2PersistenceClaim }}
         {{- end }}
         {{- if .Values.nginx.enabled }}
-        - name: nginx-config
+        - name: {{ template "ejbca.fullname" . }}-nginx-config
           configMap:
-            name: nginx-config
+            name: {{ template "ejbca.fullname" . }}-nginx-config
         - name: nginx-cert
           emptyDir: {}
         {{- end }}
