@@ -2,7 +2,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Chart.Name }}-nginx
+  name: {{ template "ejbca.fullname" . }}-nginx
 spec:
   type: {{ .Values.nginx.service.type }}
   ports:
