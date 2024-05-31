@@ -161,7 +161,7 @@ services:
     httpsPort: 8082
 ```
 
-This helm chart can deploy Nginx as a reverse proxy in front of EJBCA and expose it as a service. A local EJBCA management CA will be used to issue TLS certificate for the DNS name specified in `nginx.host`. The Nginx server can be configured in the variable `nginx.conf`.
+This helm chart can deploy Nginx as a reverse proxy in front of EJBCA and expose it as a service. A local EJBCA management CA will be used to issue TLS certificate for the DNS name specified in `nginx.host`. The Nginx server can be configured in the `templates/nginx-configmap.yaml`.
 
 ```yaml
 nginx:
@@ -171,8 +171,6 @@ nginx:
     type: NodePort
     httpPort: 30080
     httpsPort: 30443
-  conf: |
-    <nginx configurations>
 ```
 
 ### Enabling Ingress in front of EJBCA
@@ -261,6 +259,136 @@ services:
     httpPort:
     httpsPort: 8082
 ```
+
+#### Load Balancer with nginx deployed in EJBCA pod using mounted cert/key/CA & NO active CA
+Use this option to deploy the EJBCA container with no active CA. The TLS certificate, key, and CA certificate must be created from another CA and put into a secret.
+
+To create the secret for the TLS cert/key/CA issued from another CA, the following could be done:
+
+```bash
+cat > ejbca-node1.ejbca-pki-CA.pem <<EOF
+-----BEGIN CERTIFICATE-----
+MIIEszCCAxugAwIBAgIUAz2NIjmO0HC0g47bs5FVw82MZx8wDQYJKoZIhvcNAQEL
+BQAwYTEjMCEGCgmSJomT8ixkAQEME2MtMGFldDMyYjlydnY5ZTlpcjYxFTATBgNV
+BAMMDE1hbmFnZW1lbnRDQTEjMCEGA1UECgwaRUpCQ0EgQ29udGFpbmVyIFF1aWNr
+c3RhcnQwHhcNMjQwNTE1MTk0MDQyWhcNMzQwNTE1MTk0MDQxWjBhMSMwIQYKCZIm
+iZPyLGQBAQwTYy0wYWV0MzJiOXJ2djllOWlyNjEVMBMGA1UEAwwMTWFuYWdlbWVu
+dENBMSMwIQYDVQQKDBpFSkJDQSBDb250YWluZXIgUXVpY2tzdGFydDCCAaIwDQYJ
+KoZIhvcNAQEBBQADggGPADCCAYoCggGBAN9WeSB0YcBLVRS34GMUuyDyv2k/eC3c
+OyfS/1Gm3V38bXKjfpzBajGfumSDQi4aT36E+BtpBL+rRX0ry3fptkF62k6h0GFM
+HqhArcxAU+RvKsnPQpPkduZMfa9BwmZ7Aea3fUb17D5l4STDWrd+ARgMnk6/pt03
+sLxdKakZMaSdaLooPWSndQEAXGpae8/rfBZocC4wauUcU5QFCipzY923SWfihvtN
+8ifFw/MUkSezFUFYf4jmAMGcRDKSBbJYdNLkqvhc8UHpsCqVWuqp4teC7m/J50Zq
+KqoEf1ldwIrSKV4075U4jK1WUv/u3VUZ4n4f1oEA2vi0i9Xt9ZWnLK/X8cQRZgRV
+cJMD8bQx1hKsvT3/45AHDsI33705RU/400wjlh1x46bKhvSeXmiJ6UyXNebw4TRj
+6HJEQeacCaAnYm4J4BAEBVJ8mSddDBE1xU5AHbGFVcdDacCKeIuSzKoA9S8QBvTT
+oogCbfAbeHMhY3x0bo7UgN4x72lE24uW8QIDAQABo2MwYTAPBgNVHRMBAf8EBTAD
+AQH/MB8GA1UdIwQYMBaAFCOT7UdWi2+1ncrGE2e7QtlR+2DwMB0GA1UdDgQWBBQj
+k+1HVotvtZ3KxhNnu0LZUftg8DAOBgNVHQ8BAf8EBAMCAYYwDQYJKoZIhvcNAQEL
+BQADggGBAAd7a68Wr/s81UvqocYR3d/IXjqVYwWGCdmUAdF75f7D3pDVqDvD+FpD
+ZmsQVwu0hJ6aoiV6VLAGmfJPrHqGHcu3q3+z8fa9yc69zUO9G1YBD9D9h1XvxWQi
+c+tjwS37dRR5/kCT5Ky/bj9enOBSW7y0jsbQnfFy+KyTlCoB4pxvcgs+BlC6ZJK/
+kd8EZ1h/1oLd4p8mlCUNaueNRL8V+2sQd/5adORuwk1hGEbjqqRwce5wPynbSDzy
+dSkm6YCf8lSlthljcALH15wnj7DoPFdHrzJA/LeMONVJ8cmWY54G9mPln9Ss+ASE
+TnbuVAEhVjJSj/pLt8/z3HJaJ6qzWCi6qCUXwFt4VByVSjcxvTybvMcomm/ZGkCm
+qRPBdR6+KmaipFHBqwRgOQd5GLx6emwRFzdVLoZ32kk4HG72omhOqvJprdufE+fU
+hh911UCktAZ4OMzUe0SG54RmnMvYV5aGoQNfeM7PgWclThMd7Efb+fATw9JKO26G
+u8g/WHC4DA==
+-----END CERTIFICATE-----
+EOF
+
+cat > ejbca-node1.ejbca-pki-Key.pem <<EOF
+-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCm8x1NK/Y500dB
+0UAFNnvn827fEq4MSd1oZk1wvCkIa+cdQQigESCmK12BttvGexG2HutAeebfWOaJ
+W5w9lgY5MomHMXYccEMjmShEmTkA0kChk7MXDa9vUJiJld0gmx4DwiXEvb0we9WF
+Oee3PzeKNF8GrB2S4dCCAVKzbmcSn9AUKhAyi8lzMjIhMXo6O68SoYpDfkIZd1Qu
+OmKS+ceyLPrMGb3gx3ZRrUQZLv/KvdV6F2ttswyJNKaqEKvMWi4JnLElnHQ327HJ
+xewKZ9ADq4f1LCZ0IwtENAEwcYopTwPGwFigy927eOEJ/txclqnBK7iQrvyN7wVs
+kZspQZAPAgMBAAECggEACyEOkjDQC5X6z6rNt1gLQn2HDClunzSwi1+AFUScNHEc
+/Jim2CTMJfrWE1BhR9K3oSOTT/HQYvf5X+BStgUX1rarvFUFW2sqAc5MuBkoV6NG
+DUwo41LvBivVP1BVZ748Osi1qjvYlMoGHdXfJudFiI0DmKpFZNLXPeAtgMPNuZjN
+Q3MJ6rLy97Oa4Rt0+M7MifafnGhO0KystPGAvibE0P0uhu72aHxYjTc+MLPMV4yf
+7fIji6kP7RsCxRx0EdNrhfriylPJtQwu76RA8M6qkCexTfiocEzmCRWJrFk0GJ/J
+ycFHbmJ6KGbGErJmkNTTR2NXlddtZbfeCMLGpP4gQQKBgQDfU9OxApmyVZKGsz9u
+WLmeL6eaMKQRf5PtxmlD0OKatjfP8f53tGiUFXpEQNP3MBrH0M57xfhY6Ebt/U5Q
+unhD6/+A8UYMgvN9fbDHYgKxot9vjHfDFVerkFAnX49FO6tVZjH/UDIZbv5xyRIK
+9vbWiSs5sGTo8dqW4YbG/HCBWQKBgQC/X8xUibaBL4VcTgaBA14IH2dyK2vKiY7M
+XSPOwgaANOQV2Azl0yQtwfQrxdzq9/YCxo5eXnhwy15UTVyDxFRbqmM/vmHjXk5+
+I9yrCpSMkDMAH13N3hVN0d64YBFa/pGt6WZ65it6cCUEzTPnkX2lCBRulke6/YL7
++9RwPrnHpwKBgBBpSJUpa8H/J9VeNrsVKg7F0bsy99uRVH2UpwekwgI8gb12Owzw
+5P581Y9OdEUl89HbNlFCKw3dg9jZVHf6O/xBy3TeRheFR/9gzSzZtvj2zxSTbfmY
+B+lDoaBDFXQw/lY4PFRWwFe+IFScQgcsPtdlHRgQLlov67BKwmy9AEeBAoGBALMR
+pbU4wu/wkl4DmGxhxTvefsJCxPLYcijhwh62SLTwSLfz2GW4grLaOGo5E3U9nhGM
+zyyYQyRv9wz08mtNaw32yjWcJCZHWTUIw3O8S7GXQFGOCA0ZEGAnz7pAEh1N9OyB
+Z+X5t5cylkD+7eFxrtqcS9oKfoYGruiwBGEfIGEjAoGAFSpg0Hy12PyGfpvLTEpd
+qhYlQEqXS9A8N+hj/Uwv7QlWyHFY9m5sG9Gm3Dg8Wi7Lf8U3LS6cR8ZmrFQDsFeG
+5idlzQD68zaIGrqRJts9Y409YRqVydZHyV3TSzNc0gZU5c53PxAasCpozdukNKV8
+wVr2AUbRlXEvqSKSPH8ykxk=
+-----END PRIVATE KEY-----
+EOF
+
+cat > ejbca-node1.ejbca-pki.pem <<EOF
+-----BEGIN CERTIFICATE-----
+MIIEKDCCApCgAwIBAgIUCT5MQ+m87SSC17JkWHZsTvn0aTYwDQYJKoZIhvcNAQEL
+BQAwYTEjMCEGCgmSJomT8ixkAQEME2MtMGFldDMyYjlydnY5ZTlpcjYxFTATBgNV
+BAMMDE1hbmFnZW1lbnRDQTEjMCEGA1UECgwaRUpCQ0EgQ29udGFpbmVyIFF1aWNr
+c3RhcnQwHhcNMjQwNTMwMDkxMDQ4WhcNMjYwNTMwMDkxMDQ3WjAgMR4wHAYDVQQD
+DBVlamJjYS1ub2RlMS5lamJjYS1wa2kwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw
+ggEKAoIBAQCm8x1NK/Y500dB0UAFNnvn827fEq4MSd1oZk1wvCkIa+cdQQigESCm
+K12BttvGexG2HutAeebfWOaJW5w9lgY5MomHMXYccEMjmShEmTkA0kChk7MXDa9v
+UJiJld0gmx4DwiXEvb0we9WFOee3PzeKNF8GrB2S4dCCAVKzbmcSn9AUKhAyi8lz
+MjIhMXo6O68SoYpDfkIZd1QuOmKS+ceyLPrMGb3gx3ZRrUQZLv/KvdV6F2ttswyJ
+NKaqEKvMWi4JnLElnHQ327HJxewKZ9ADq4f1LCZ0IwtENAEwcYopTwPGwFigy927
+eOEJ/txclqnBK7iQrvyN7wVskZspQZAPAgMBAAGjgZgwgZUwDAYDVR0TAQH/BAIw
+ADAfBgNVHSMEGDAWgBQjk+1HVotvtZ3KxhNnu0LZUftg8DAgBgNVHREEGTAXghVl
+amJjYS1ub2RlMS5lamJjYS1wa2kwEwYDVR0lBAwwCgYIKwYBBQUHAwEwHQYDVR0O
+BBYEFALU+Kx26r9gH6TqA0offpDj7mTgMA4GA1UdDwEB/wQEAwIFoDANBgkqhkiG
+9w0BAQsFAAOCAYEACn8zn2btAETZK9gL5pgbS2X4Xo+QqfQVh988Z0np8cVGPOdK
+uV1wwcVy0/kmTs6PQhuGGg/NVx8WfMqyKkjUrjxyqw6rBol5Rr4tPknsUZQNx8jO
+mXqPHaMIlZLJudwYBbc2uo2yW9si6Q8CR637HfyxSLGQtO4339Y0tBd4BZg7axca
+bTyDWd1oKTSR2+rWaeMBWBbW1YocQJvRBBRHBPh2qgAduGS41QVQQ7ofBRGxCrNa
+nVrlfosp/qJxr2iMGlUKVtJFieGRgKtGZZiYwmpc9jtVsS4nJb0hfDZQR2P5hb9U
+U+O/gT0E3F5VlhcNVOosX/RGGcbOWm7VeXMryvPP+zS0RqOpNU3clqpa1oIZcdKH
+WyqlJ1vTqmBsWeQBnP7q7MYWGRnQfH9RKeKTr53YCjli3o5+D3VT7Fc9Jemxzmk7
+pyd4meGQKGTZDsKKUFF61Yf7TygwReu1qYdyqEK5PhvJbrZfVsSHPBHqmTaGQSZ8
+iz/WND8DovS/O0Yr
+-----END CERTIFICATE-----
+EOF
+
+kubectl -n ejbca create secret generic internal-nginx-credential-secret-ca --from-file ./ejbca-node1.ejbca-CA.pem \
+--from-file ./ejbca-node1.ejbca-Key.pem --from-file ./ejbca-node1.ejbca.pem
+```
+Update the vaules.yaml to something similar:
+
+```yaml
+ejbca:
+  env:
+    TLS_SETUP_ENABLED: "later"
+services:
+  directHttp:
+    enabled: false
+  proxyAJP:
+    enabled: false
+  proxyHttp:
+    enabled: true
+    type: LoadBalancer
+    bindIP: 0.0.0.0
+    httpPort: 80
+    httpsPort: 443
+nginx:
+  enabled: true
+  host: "ejbca-node1.ejbca"
+  proxy_url_host: localhost
+  mountInternalNginxCert: true
+  secretInternalNginxCert: "internal-nginx-credential-secret-ca"
+  service:
+    enabled: false
+    type: NodePort
+    httpPort: 30080
+    httpsPort: 30443
+```
+
 
 ### Using init containers and sidecar containers
 
@@ -438,7 +566,7 @@ The following lists other variables that provide additional miscellaneous capabi
 | ----------------------------- | ---------------------------------------------------------------------------------------------------- | --------- |
 | services.directHttp.enabled   | If service for communcating directly with EJBCA container should be enabled                          | true      |
 | services.directHttp.type      | Service type for communcating directly with EJBCA container                                          | NodePort  |
-| services.directHttp.httpPort  | HTTP port for communcating directly with EJBCA container                                             | 30080     |
+| services.directHttp.httpPort  | HTTP port for communcating directly with EJBCA container. Do not assert a value to disable HTTP at the service | 30080     |
 | services.directHttp.httpsPort | HTTPS port for communcating directly with EJBCA container                                            | 30443     |
 | services.proxyAJP.enabled     | If service for reverse proxy servers to communicate with EJBCA container over AJP should be enabled  | false     |
 | services.proxyAJP.type        | Service type for proxy AJP communication                                                             | ClusterIP |
@@ -447,7 +575,7 @@ The following lists other variables that provide additional miscellaneous capabi
 | services.proxyHttp.enabled    | If service for reverse proxy servers to communicate with EJBCA container over HTTP should be enabled | false     |
 | services.proxyHttp.type       | Service type for proxy HTTP communication. When LoadBalancer type is used the nginx proxy must also be used with the following settings `nginx.enabled=true` and `nginx.service.enabled=false`                                                            | ClusterIP |
 | services.proxyHttp.bindIP     | IP to bind for proxy HTTP communication                                                              | 0.0.0.0   |
-| services.proxyHttp.httpPort   | Service port for proxy HTTP communication                                                            | 8081      |
+| services.proxyHttp.httpPort   | Service port for proxy HTTP communication. Do not assert a value to disable HTTP at the service      | 8081      |
 | services.proxyHttp.httpsPort  | Service port for proxy HTTP communication that accepts SSL_CLIENT_CERT header                        | 8082      |
 | services.sidecarPorts         | Additional ports to expose in sidecar containers                                                     | []        |
 
@@ -457,9 +585,12 @@ The following lists other variables that provide additional miscellaneous capabi
 | -------------------------- | ---------------------------------------------------------------------- | -------- |
 | nginx.enabled              | If NGINX sidecar container should be deploy as reverse proxy for EJBCA | false    |
 | nginx.host                 | NGINX reverse proxy server name, used for the commonName in the nginx TLS certificate |          |
-| nginx.service.enabled      | Creates a service for accessing EJBCA. This should be used when using `services.proxyHttp.type=LoadBalancer`             | false    |
+| nginx.proxy_url_host       | The hostname used to proxy from NGINX to EJBCA. When NGINX is in the same pod as EJBCA use localhost |          |
+| nginx.mountInternalNginxCert | Use a Secret mounted TLS certificate, private key, and CA cert for NGINX. Use when there is no active CA or use a TLS cert not issued by the ManagementCA |          |
+| nginx.secretInternalNginxCert | Name of the secret that contains the certificate, key, and CA certificate |          |
+| nginx.service.enabled      | Creates a service for accessing EJBCA. This should be used when using `services.proxyHttp.type=LoadBalancer` | false    |
 | nginx.service.type         | Type of service to create for NGINX reverse proxy                      | NodePort |
-| nginx.service.httpPort     | HTTP port to use for NGINX reverse proxy                               | 30080    |
+| nginx.service.httpPort     | HTTP port to use for NGINX reverse proxy. Do not assert a value to disable HTTP at the service | 30080    |
 | nginx.service.httpsPort    | HTTPS port to use for NGINX reverse proxy                              | 30443    |
 | nginx.conf                 | NGINX server configuration parameters                                  |          |
 

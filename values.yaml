@@ -134,6 +134,10 @@ nginx:
   host: ""
   # The hostname used to proxy from nginx to EJBCA. When nginx is in the same pod as EJBCA use localhost
   proxy_url_host: localhost
+  # Server TLS credential for cluster internal communication
+  mountInternalNginxCert: false
+  # Name of the secret that contains the certificate, key, and CA certificate
+  secretInternalNginxCert: "internal-nginx-credential-secret-ca"
   service:
     enabled: false
     type: NodePort
