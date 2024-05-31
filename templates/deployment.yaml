@@ -40,7 +40,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}  
       {{- if or .Values.nginx.enabled .Values.ejbca.initContainers }}
       initContainers:
-        {{- if .Values.nginx.enabled }}
+        {{- if and .Values.nginx.enabled (not .Values.nginx.mountInternalNginxCert) }}
         - name: {{ template "ejbca.fullname" . }}-init
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
@@ -102,8 +102,13 @@ spec:
             - name: {{ template "ejbca.fullname" . }}-nginx-config
               mountPath: /etc/nginx/nginx.conf
               subPath: nginx.conf
+            {{- if .Values.nginx.mountInternalNginxCert }}
+            - name: nginx-cert-provided
+              mountPath: /etc/nginx/ssl/pem/
+            {{- else }}
             - name: nginx-cert
               mountPath: /etc/nginx/ssl/
+            {{- end }}
         {{- end }}
         - name: {{ template "ejbca.fullname" . }}
           securityContext:
@@ -240,6 +245,11 @@ spec:
             name: {{ template "ejbca.fullname" . }}-nginx-config
         - name: nginx-cert
           emptyDir: {}
+        {{- if .Values.nginx.mountInternalNginxCert }}
+        - name: nginx-cert-provided
+          secret:
+            secretName: {{ .Values.nginx.secretInternalNginxCert }}
+        {{- end }}  
         {{- end }}
         {{- if .Values.ejbca.importExternalCas }}
         - name: ejbca-config-external-cas
