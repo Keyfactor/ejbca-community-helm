@@ -1,6 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
+  {{- if .Values.services.proxyHttp.annotations }}
+  annotations:
+    {{- range $key, $value := index .Values.services.proxyHttp.annotations }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+  {{- end }}
   name: {{ include "ejbca.fullname" . }}
   labels:
     {{- include "ejbca.labels" . | nindent 4 }}
