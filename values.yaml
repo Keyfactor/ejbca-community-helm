@@ -142,6 +142,8 @@ nginx:
   issuingCA: ManagementCA
   # The certificate profile to use when issuing the certificate for nginx
   certificateProfile: SERVER
+  # Removes the end entity and revokes all certificates (used for swapping out the CA) (not recommended to keep on)
+  resetEndEntity: false
   service:
     enabled: false
     type: NodePort

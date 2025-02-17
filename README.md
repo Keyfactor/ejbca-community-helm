@@ -589,7 +589,8 @@ The following lists other variables that provide additional miscellaneous capabi
 | nginx.mountInternalNginxCert | Use a Secret mounted TLS certificate, private key, and CA cert for NGINX. Use when there is no active CA or use a TLS cert not issued by the ManagementCA |          |
 | nginx.secretInternalNginxCert | Name of the secret that contains the certificate, key, and CA certificate |          |
 | nginx.issuingCA            | Changes the CA to issue the cert out of                                | ManagementCA |
-| nginx.certificateProfile   | Changes the profile to issue the certificate out of                    | SERVER |
+| nginx.certificateProfile   | Changes the profile to issue the certificate out of                    | SERVER   |
+| nginx.resetEndEntity       | Removes the previous end entity Used when rotating the CA out.         | false    |
 | nginx.service.enabled      | Creates a service for accessing EJBCA. This should be used when using `services.proxyHttp.type=LoadBalancer` | false    |
 | nginx.service.type         | Type of service to create for NGINX reverse proxy                      | NodePort |
 | nginx.service.httpPort     | HTTP port to use for NGINX reverse proxy. Do not assert a value to disable HTTP at the service | 30080    |

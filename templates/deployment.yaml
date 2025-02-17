@@ -59,6 +59,10 @@ spec:
               until [ -f /opt/keyfactor/appserver/standalone/deployments/ejbca.ear.deployed ]; do sleep 5; done
               until [[ $(/opt/keyfactor/bin/ejbca.sh roles listadmins --role "Super Administrator Role" | grep -v 'USERNAME TYPE_EQUALCASE "ejbca"') ]]; do sleep 5; done
               sleep 5
+              {{- if .Values.nginx.resetEndEntity }}
+              /opt/keyfactor/bin/ejbca.sh ra revokeendentity --username '{{ .Values.nginx.host }}' -r 0
+              /opt/keyfactor/bin/ejbca.sh ra delendentity --username '{{ .Values.nginx.host }}' -force
+              {{- end }}
               /opt/keyfactor/bin/ejbca.sh ra addendentity --username '{{ .Values.nginx.host }}' --dn 'CN={{ .Values.nginx.host }}' --caname '{{ .Values.nginx.issuingCA }}' --type 1 --token PEM --altname 'dNSName={{ .Values.nginx.host }}' --certprofile '{{ .Values.nginx.certificateProfile }}' --password NOTUSED
               /opt/keyfactor/bin/ejbca.sh ra setendentitystatus --username '{{ .Values.nginx.host }}' -S 10
               /opt/keyfactor/bin/ejbca.sh ra setclearpwd '{{ .Values.nginx.host }}' NOTUSED
