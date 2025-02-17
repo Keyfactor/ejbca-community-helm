@@ -26,4 +26,7 @@ spec:
     {{- end }}
   selector:
     {{- include "ejbca.selectorLabels" . | nindent 4 }}
+  {{- if eq .Values.nginx.service.type "LoadBalancer" (.Values.nginx.service.loadBalancerIP) }}
+  loadBalancerIP: {{ .Values.nginx.service.loadBalancerIP }}
+  {{- end }}
 {{- end }}
