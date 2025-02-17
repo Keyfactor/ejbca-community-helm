@@ -138,6 +138,10 @@ nginx:
   mountInternalNginxCert: false
   # Name of the secret that contains the certificate, key, and CA certificate
   secretInternalNginxCert: "internal-nginx-credential-secret-ca"
+  # After you have setup your root or subordinate CA, you can use the following to issue a certificate for nginx from that CA Insted
+  issuingCA: ManagementCA
+  # The certificate profile to use when issuing the certificate for nginx
+  certificateProfile: SERVER
   service:
     enabled: false
     type: NodePort
