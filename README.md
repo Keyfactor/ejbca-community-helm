@@ -588,10 +588,14 @@ The following lists other variables that provide additional miscellaneous capabi
 | nginx.proxy_url_host       | The hostname used to proxy from NGINX to EJBCA. When NGINX is in the same pod as EJBCA use localhost |          |
 | nginx.mountInternalNginxCert | Use a Secret mounted TLS certificate, private key, and CA cert for NGINX. Use when there is no active CA or use a TLS cert not issued by the ManagementCA |          |
 | nginx.secretInternalNginxCert | Name of the secret that contains the certificate, key, and CA certificate |          |
+| nginx.issuingCA            | Changes the CA to issue the cert out of                                | ManagementCA |
+| nginx.certificateProfile   | Changes the profile to issue the certificate out of                    | SERVER   |
+| nginx.resetEndEntity       | Removes the previous end entity Used when rotating the CA out.         | false    |
 | nginx.service.enabled      | Creates a service for accessing EJBCA. This should be used when using `services.proxyHttp.type=LoadBalancer` | false    |
 | nginx.service.type         | Type of service to create for NGINX reverse proxy                      | NodePort |
 | nginx.service.httpPort     | HTTP port to use for NGINX reverse proxy. Do not assert a value to disable HTTP at the service | 30080    |
 | nginx.service.httpsPort    | HTTPS port to use for NGINX reverse proxy                              | 30443    |
+| nginx.service.loadBalancerIP | When using NGINX as a load balancer service type, Optionaly specify the load balancer IP address for network controllers to use (Type must be load balancer) | UNSET |
 | nginx.conf                 | NGINX server configuration parameters                                  |          |
 
 ### Ingress Parameters

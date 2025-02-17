@@ -138,11 +138,19 @@ nginx:
   mountInternalNginxCert: false
   # Name of the secret that contains the certificate, key, and CA certificate
   secretInternalNginxCert: "internal-nginx-credential-secret-ca"
+  # After you have setup your root or subordinate CA, you can use the following to issue a certificate for nginx from that CA Insted
+  issuingCA: ManagementCA
+  # The certificate profile to use when issuing the certificate for nginx
+  certificateProfile: SERVER
+  # Removes the end entity and revokes all certificates (used for swapping out the CA) (not recommended to keep on)
+  resetEndEntity: false
   service:
     enabled: false
     type: NodePort
     httpPort: 30080
     httpsPort: 30443
+    # When using NGINX as a load balancer service type, you can specify the load balancer IP address for network controllers to use (ig metallb)
+    loadBalancerIP:
  
 # Requires proxyAJP or proxyHttp service to be enabled for adminweb access
 ingress:
