@@ -37,7 +37,10 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "ejbca.serviceAccountName" . }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}  
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.ejbca.hostAliases }}
+      hostAliases: {{- toYaml .Values.ejbca.hostAliases | nindent 8 }}
+      {{- end }}
       {{- if or .Values.nginx.enabled .Values.ejbca.initContainers }}
       initContainers:
         {{- if and .Values.nginx.enabled (not .Values.nginx.mountInternalNginxCert) }}
