@@ -74,7 +74,7 @@ spec:
       {{- if eq .Values.services.proxyHttp.type "LoadBalancer" }}
       targetPort: nginx-https
       {{- else }}
-      targetPort: proxy-http
+      targetPort: proxy-https
       {{- end }}
       protocol: TCP
       name: proxy-https
