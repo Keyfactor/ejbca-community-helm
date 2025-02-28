@@ -126,10 +126,15 @@ services:
     # recommended, use with nginx in pod with LoadBalancer service or ingress
   proxyHttp:
     enabled: false
+    ## annotations to be added to the service
+    # annotations:
+    #   key1: value1
+    #   key2: value2
     type: ClusterIP
     bindIP: 0.0.0.0
     httpPort: 8081
     httpsPort: 8082
+
   # Extra sidecar ports to be added to the service, optionally used when sidecarContainers
   # are defined and need to expose ports
   sidecarPorts: []
