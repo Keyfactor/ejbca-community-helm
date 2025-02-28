@@ -102,6 +102,13 @@ ejbca:
   volumes: []
   # Extra volume mounts to be added to the deployment
   volumeMounts: []
+  # Add entries to /etc/hosts
+  # https://kubernetes.io/docs/tasks/network/customize-hosts-file-for-pods/
+  #  - ip: "127.0.0.1"
+  #    hostnames:
+  #      - "localhost"
+  #      - "ejbca"
+  hostAliases: []
 
 # Only one of the following services can be enabled at a time
 services:

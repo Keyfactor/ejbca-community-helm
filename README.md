@@ -432,13 +432,27 @@ ejbca:
       mountPath: /opt/sockets
 ```
 
+### Adding entries to `/etc/hosts`
+
+If you need to add entries to `/etc/hosts` in the EJBCA container, you can use the `ejbca.hostAliases` parameter.
+The following example shows how to add an entry to `/etc/hosts`:
+
+```yaml
+ejbca:
+  hostAliases:
+    - ip: "10.1.2.3"
+      hostnames:
+        - "foo.remote"
+        - "bar.remote"
+```
+
 ## Parameters
 
 ### EJBCA Deployment Parameters
 
 | Name                             | Description                                                                                                                            | Default |
-| -------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| ejbca.useEphemeralH2Database           | If in-memory internal H2 database should be used                                                                                       | true    |
+|----------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|---------|
+| ejbca.useEphemeralH2Database     | If in-memory internal H2 database should be used                                                                                       | true    |
 | ejbca.useH2Persistence           | If internal H2 database with persistence should be used. Requires existingH2PersistenceClaim to be set                                 | false   |
 | ejbca.existingH2PersistenceClaim | PersistentVolumeClaim that internal H2 database can use for data persistence                                                           |         |
 | ejbca.importExternalCas          | If CA certificates should be imported into EJBCA as external CAs                                                                       | false   |
@@ -456,6 +470,7 @@ ejbca:
 | ejbca.sidecarContainers          | Extra sidecar containers to be added to the deployment                                                                                 | []      |
 | ejbca.volumes                    | Extra volumes to be added to the deployment                                                                                            | []      |
 | ejbca.volumeMounts               | Extra volume mounts to be added to the deployment                                                                                      | []      |
+| ejbca.hostAliases                | Entries to add to `/etc/hosts` in the EJBCA container                                                                                  | []      |
 
 ### EJBCA Environment Variables
 
