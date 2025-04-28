@@ -1,6 +1,17 @@
 ![EJBCA](.github/community-ejbca-lite.png)
 
-# Helm Chart for EJBCA Community
+# 📢 Repository Deprecated
+This repository has been deprecated and is no longer maintained.
+
+All content has been moved to [EJBCA Community](https://github.com/Keyfactor/ejbca-ce/tree/main/charts/ejbca). Please refer to that repository for the latest updates, issues, and contributions.
+
+This repository will remain available in a read-only state for historical reference, but no further changes or fixes will be made.
+
+For any new issues, discussions, or contributions, please visit the new [repository](https://github.com/Keyfactor/ejbca-ce).
+
+Thank you for your support!
+
+## Helm Chart for EJBCA Community
 
 Helm chart for deploying EJBCA in Kubernetes. Designed to be simple and flexible.
 
